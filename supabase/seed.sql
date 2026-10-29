@@ -154,3 +154,76 @@ VALUES
     ('d0eebc99-9c0b-4ef8-bb6d-6bb9bd380d03'::UUID, 'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380c01'::UUID, 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID),
     ('d0eebc99-9c0b-4ef8-bb6d-6bb9bd380d04'::UUID, 'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380c02'::UUID, 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID)
 ON CONFLICT (patient_id, professional_id, clinic_id) DO NOTHING;
+
+-- 6. Prontuários Médicos Odontológicos (medical_records)
+INSERT INTO public.medical_records (id, clinic_id, patient_id, professional_id, record_number, status)
+VALUES
+    (
+        'e0eebc99-9c0b-4ef8-bb6d-6bb9bd380e01'::UUID,
+        'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+        'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380d01'::UUID,
+        'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380c01'::UUID,
+        'C-014',
+        'active'
+    ),
+    (
+        'e0eebc99-9c0b-4ef8-bb6d-6bb9bd380e02'::UUID,
+        'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+        'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380d02'::UUID,
+        'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380c01'::UUID,
+        'C-001',
+        'active'
+    ),
+    (
+        'e0eebc99-9c0b-4ef8-bb6d-6bb9bd380e03'::UUID,
+        'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+        'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380d03'::UUID,
+        'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380c01'::UUID,
+        'C-033',
+        'active'
+    ),
+    (
+        'e0eebc99-9c0b-4ef8-bb6d-6bb9bd380e04'::UUID,
+        'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+        'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380d04'::UUID,
+        'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380c02'::UUID,
+        'C-082',
+        'active'
+    )
+ON CONFLICT (clinic_id, patient_id) DO NOTHING;
+
+-- 7. Fichas de Anamnese com Alertas de Alergias
+INSERT INTO public.anamneses (
+    id, clinic_id, patient_id, has_critical_alert, critical_alert_notes,
+    allergies, continuous_medications, systemic_diseases,
+    has_cardiac_condition, has_diabetes, has_hypertension, has_bleeding_disorder, is_pregnant_or_lactating,
+    clinical_notes, updated_by
+)
+VALUES
+    (
+        'f0eebc99-9c0b-4ef8-bb6d-6bb9bd380f01'::UUID,
+        'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+        'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380d01'::UUID,
+        true,
+        'ALERGIA SEVERA: Penicilina e Dipirona (choque anafilático e edema de glote relatados). Proibida Amoxicilina.',
+        ARRAY['Penicilina e derivados', 'Dipirona Sódica'],
+        ARRAY['Anticoncepcional oral combinado'],
+        ARRAY['Enxaqueca crônica'],
+        false, false, false, false, false,
+        'Paciente orientada quanto a alternativas terapêuticas analgésicas e antibióticas (ex: Clindamicina / Azitromicina).',
+        'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380c01'::UUID
+    ),
+    (
+        'f0eebc99-9c0b-4ef8-bb6d-6bb9bd380f02'::UUID,
+        'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+        'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380d03'::UUID,
+        true,
+        'CARDIOPATA: Uso contínuo de Varfarina/Marevan (anticoagulante oral). Monitorar RNI antes de exodontias.',
+        ARRAY[]::TEXT[],
+        ARRAY['Varfarina 5mg', 'Atenolol 25mg'],
+        ARRAY['Cardiopatia Isquêmica', 'Hipertensão Arterial Sistêmica'],
+        true, false, true, true, false,
+        'Solicitar coagulograma e liberação cardiológica antes de intervenções cirúrgicas invasivas.',
+        'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380c01'::UUID
+    )
+ON CONFLICT (clinic_id, patient_id) DO NOTHING;
