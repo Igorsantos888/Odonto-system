@@ -91,3 +91,66 @@ VALUES
     ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID, 'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380c05'::UUID, 'assistente', true)
 ON CONFLICT (clinic_id, user_id) DO UPDATE
 SET role = EXCLUDED.role;
+
+-- 4. Pacientes de Demonstração (Etapa 3)
+INSERT INTO public.patients (id, clinic_id, full_name, cpf, birth_date, gender, phone, email, address, notes)
+VALUES
+    (
+        'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380d01'::UUID,
+        'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+        'Mariana Ribeiro Alves',
+        '12345678901',
+        '1992-05-14',
+        'F',
+        '11987654321',
+        'mariana.ribeiro@email.com',
+        'Rua Augusta, 1200, Apto 42 - Consolação, São Paulo - SP',
+        'ALERGIAS GRAVES: Penicilina e Dipirona. Histórico de broncoespasmo.'
+    ),
+    (
+        'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380d02'::UUID,
+        'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+        'Carlos Eduardo Costa',
+        '98765432100',
+        '1985-11-20',
+        'M',
+        '11976543210',
+        'carlos.costa@email.com',
+        'Alameda Santos, 450 - Jardins, São Paulo - SP',
+        'Paciente em fase de reabilitação protética superior (dentes 16 e 26).'
+    ),
+    (
+        'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380d03'::UUID,
+        'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+        'João Paulo de Albuquerque',
+        '45678912345',
+        '1978-03-08',
+        'M',
+        '11965432109',
+        'joao.albuquerque@email.com',
+        'Rua Pamplona, 900 - Bela Vista, São Paulo - SP',
+        'Cardiopata (stent coronário em 2022). Em uso contínuo de anticoagulante oral.'
+    ),
+    (
+        'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380d04'::UUID,
+        'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+        'Luciana Martins Ferreira',
+        '32165498711',
+        '1996-08-25',
+        'F',
+        '11954321098',
+        'luciana.martins@email.com',
+        'Rua Vergueiro, 2200 - Paraíso, São Paulo - SP',
+        'Manutenção preventiva periódica e clareamento dental.'
+    )
+ON CONFLICT (id) DO UPDATE
+SET full_name = EXCLUDED.full_name;
+
+-- 5. Vínculo Paciente - Cirurgião-Dentista
+INSERT INTO public.patient_professionals (patient_id, professional_id, clinic_id)
+VALUES
+    ('d0eebc99-9c0b-4ef8-bb6d-6bb9bd380d01'::UUID, 'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380c01'::UUID, 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID),
+    ('d0eebc99-9c0b-4ef8-bb6d-6bb9bd380d02'::UUID, 'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380c01'::UUID, 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID),
+    ('d0eebc99-9c0b-4ef8-bb6d-6bb9bd380d03'::UUID, 'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380c01'::UUID, 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID),
+    ('d0eebc99-9c0b-4ef8-bb6d-6bb9bd380d04'::UUID, 'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380c02'::UUID, 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID)
+ON CONFLICT (patient_id, professional_id, clinic_id) DO NOTHING;
