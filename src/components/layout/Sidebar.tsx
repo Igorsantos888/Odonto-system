@@ -17,8 +17,12 @@ import {
   LogOut,
   Building2,
   X,
+  ChevronDown,
 } from 'lucide-react'
 import { Badge } from '../ui/Badge'
+import { useAuth } from '../../contexts/AuthContext'
+import { getRoleLabel } from '../../utils/formatters'
+import type { UserRole } from '../../types'
 
 export interface SidebarProps {
   isOpen: boolean
@@ -29,6 +33,7 @@ interface NavItem {
   label: string
   path: string
   icon: React.ElementType
+  allowedRoles?: UserRole[]
   badge?: {
     text: string
     variant: 'critical' | 'warning' | 'success' | 'info' | 'neutral'
@@ -52,31 +57,88 @@ const navSections: NavSection[] = [
     title: 'Módulos Clínicos',
     items: [
       { label: 'Pacientes', path: '/pacientes', icon: Users },
-      { label: 'Prontuários', path: '/prontuarios', icon: FileText },
-      { label: 'Anamnese', path: '/anamnese', icon: ClipboardList, badge: { text: 'Alertas', variant: 'critical' } },
-      { label: 'Odontograma', path: '/odontograma', icon: Smile },
-      { label: 'Exames & Imagens', path: '/exames', icon: ImageIcon },
-      { label: 'Tratamentos', path: '/tratamentos', icon: Stethoscope },
+      {
+        label: 'Prontuários',
+        path: '/prontuarios',
+        icon: FileText,
+        allowedRoles: ['admin_clinica', 'dentista', 'assistente'],
+      },
+      {
+        label: 'Anamnese',
+        path: '/anamnese',
+        icon: ClipboardList,
+        allowedRoles: ['admin_clinica', 'dentista', 'assistente'],
+        badge: { text: 'Alertas', variant: 'critical' },
+      },
+      {
+        label: 'Odontograma',
+        path: '/odontograma',
+        icon: Smile,
+        allowedRoles: ['admin_clinica', 'dentista'],
+      },
+      {
+        label: 'Exames & Imagens',
+        path: '/exames',
+        icon: ImageIcon,
+        allowedRoles: ['admin_clinica', 'dentista'],
+      },
+      {
+        label: 'Tratamentos',
+        path: '/tratamentos',
+        icon: Stethoscope,
+        allowedRoles: ['admin_clinica', 'dentista'],
+      },
     ],
   },
   {
     title: 'Gestão e Operações',
     items: [
-      { label: 'Financeiro', path: '/financeiro', icon: DollarSign },
-      { label: 'Laboratórios', path: '/laboratorios', icon: FlaskConical, badge: { text: '2 previstos', variant: 'warning' } },
+      {
+        label: 'Financeiro',
+        path: '/financeiro',
+        icon: DollarSign,
+        allowedRoles: ['admin_clinica', 'financeiro'],
+      },
+      {
+        label: 'Laboratórios',
+        path: '/laboratorios',
+        icon: FlaskConical,
+        allowedRoles: ['admin_clinica', 'dentista', 'assistente'],
+        badge: { text: '2 previstos', variant: 'warning' },
+      },
       { label: 'Tarefas', path: '/tarefas', icon: CheckSquare },
-      { label: 'Relatórios', path: '/relatorios', icon: BarChart3 },
+      {
+        label: 'Relatórios',
+        path: '/relatorios',
+        icon: BarChart3,
+        allowedRoles: ['admin_clinica', 'financeiro'],
+      },
     ],
   },
   {
     title: 'Configurações',
     items: [
-      { label: 'Configurações', path: '/configuracoes', icon: Settings },
+      {
+        label: 'Configurações',
+        path: '/configuracoes',
+        icon: Settings,
+        allowedRoles: ['admin_clinica'],
+      },
     ],
   },
 ]
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
+  const {
+    profile,
+    clinics,
+    activeClinic,
+    activeRole,
+    setActiveClinicId,
+    signOut,
+    hasPermission,
+  } = useAuth()
+
   return (
     <>
       {/* Mobile overlay */}
@@ -116,102 +178,128 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           </button>
         </div>
 
-        {/* Clinic context badge / selector */}
+        {/* Clinic context switcher (Multitenancy RLS) */}
         <div className="p-4 border-b border-slate-100 bg-slate-50/70">
           <div className="flex items-center gap-2.5 text-xs">
-            <div className="p-1.5 rounded-lg bg-teal-100 text-teal-800">
+            <div className="p-1.5 rounded-lg bg-teal-100 text-teal-800 shrink-0">
               <Building2 className="w-4 h-4" />
             </div>
             <div className="flex-1 min-w-0">
-              <span className="block text-[11px] font-medium text-slate-500 uppercase tracking-wider">
-                Clínica Ativa
-              </span>
-              <span className="block font-semibold text-slate-800 truncate">
-                OdontoPrime Matriz
-              </span>
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                  Unidade Ativa
+                </span>
+                <span className="text-[9px] px-1.5 py-0.2 rounded bg-teal-50 text-teal-700 font-semibold border border-teal-200">
+                  RLS ATIVO
+                </span>
+              </div>
+              <div className="relative mt-0.5">
+                <select
+                  value={activeClinic?.id || ''}
+                  onChange={(e) => setActiveClinicId(e.target.value)}
+                  className="w-full text-xs font-semibold text-slate-800 bg-transparent pr-4 truncate border-0 p-0 focus:ring-0 cursor-pointer"
+                >
+                  {clinics.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none" />
+              </div>
             </div>
-            <span className="text-[10px] px-1.5 py-0.5 rounded bg-teal-50 text-teal-700 font-semibold border border-teal-200">
-              RLS ON
-            </span>
           </div>
         </div>
 
         {/* Navigation list */}
         <nav className="flex-1 overflow-y-auto px-4 py-3 space-y-6">
-          {navSections.map((section) => (
-            <div key={section.title}>
-              <h4 className="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
-                {section.title}
-              </h4>
-              <ul className="space-y-0.5">
-                {section.items.map((item) => (
-                  <li key={item.path}>
-                    <NavLink
-                      to={item.path}
-                      onClick={() => {
-                        // Close sidebar on mobile when navigating
-                        if (window.innerWidth < 1024) onClose()
-                      }}
-                      className={({ isActive }) =>
-                        `flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                          isActive
-                            ? 'bg-teal-50 text-teal-700 font-semibold border border-teal-200/60 shadow-2xs'
-                            : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                        }`
-                      }
-                      end={item.path === '/'}
-                    >
-                      {({ isActive }) => (
-                        <>
-                          <div className="flex items-center gap-3">
-                            <item.icon
-                              className={`w-4 h-4 transition-colors ${
-                                isActive ? 'text-teal-600' : 'text-slate-400'
-                              }`}
-                            />
-                            <span>{item.label}</span>
-                          </div>
-                          {item.badge && (
-                            <Badge
-                              variant={item.badge.variant}
-                              size="sm"
-                              showDefaultIcon={false}
-                            >
-                              {item.badge.text}
-                            </Badge>
-                          )}
-                        </>
-                      )}
-                    </NavLink>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          {navSections.map((section) => {
+            // Filtra itens com base no RBAC
+            const visibleItems = section.items.filter(
+              (item) => !item.allowedRoles || hasPermission(item.allowedRoles)
+            )
+
+            if (visibleItems.length === 0) return null
+
+            return (
+              <div key={section.title}>
+                <h4 className="px-3 text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+                  {section.title}
+                </h4>
+                <ul className="space-y-0.5">
+                  {visibleItems.map((item) => (
+                    <li key={item.path}>
+                      <NavLink
+                        to={item.path}
+                        onClick={() => {
+                          if (window.innerWidth < 1024) onClose()
+                        }}
+                        className={({ isActive }) =>
+                          `flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                            isActive
+                              ? 'bg-teal-50 text-teal-700 font-semibold border border-teal-200/60 shadow-2xs'
+                              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                          }`
+                        }
+                        end={item.path === '/'}
+                      >
+                        {({ isActive }) => (
+                          <>
+                            <div className="flex items-center gap-3">
+                              <item.icon
+                                className={`w-4 h-4 transition-colors ${
+                                  isActive ? 'text-teal-600' : 'text-slate-400'
+                                }`}
+                              />
+                              <span>{item.label}</span>
+                            </div>
+                            {item.badge && (
+                              <Badge
+                                variant={item.badge.variant}
+                                size="sm"
+                                showDefaultIcon={false}
+                              >
+                                {item.badge.text}
+                              </Badge>
+                            )}
+                          </>
+                        )}
+                      </NavLink>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )
+          })}
         </nav>
 
         {/* User profile & footer */}
         <div className="p-4 border-t border-slate-100 bg-white">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-full bg-teal-100 text-teal-800 font-semibold flex items-center justify-center text-xs ring-2 ring-teal-200/50">
-              MS
+              {profile?.full_name ? profile.full_name.slice(0, 2).toUpperCase() : 'US'}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-semibold text-slate-800 truncate">Dr. Mateus Silva</p>
-              <p className="text-[11px] text-slate-500 truncate">CRO-SP 104.821 • Admin</p>
+              <p className="text-xs font-semibold text-slate-800 truncate">
+                {profile?.full_name || 'Usuário Autenticado'}
+              </p>
+              <p className="text-[11px] text-slate-500 truncate">
+                {getRoleLabel(activeRole || 'dentista')}
+              </p>
             </div>
-            <NavLink
-              to="/login"
-              title="Sair / Login"
+            <button
+              onClick={() => signOut()}
+              title="Encerrar sessão segura"
+              type="button"
               className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
               aria-label="Sair"
             >
               <LogOut className="w-4 h-4" />
-            </NavLink>
+            </button>
           </div>
           <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400">
-            <span>Versão 1.0 (Etapa 1)</span>
-            <span className="text-teal-600 font-medium">Modo Seguro</span>
+            <span>Sessão Supabase Auth</span>
+            <span className="text-teal-600 font-semibold">PostgreSQL RLS</span>
           </div>
         </div>
       </aside>

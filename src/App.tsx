@@ -2,6 +2,8 @@ import React, { Suspense, lazy } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AppLayout } from './layouts/AppLayout'
 import { AuthLayout } from './layouts/AuthLayout'
+import { AuthProvider } from './contexts/AuthContext'
+import { ProtectedRoute } from './components/shared/ProtectedRoute'
 import { Loader2 } from 'lucide-react'
 
 // Lazy loading das páginas para otimização de bundle e performance
@@ -31,36 +33,111 @@ const PageLoader: React.FC = () => (
 
 export const App: React.FC = () => {
   return (
-    <BrowserRouter>
-      <Suspense fallback={<PageLoader />}>
-        <Routes>
-          {/* Rotas Autenticadas com AppLayout */}
-          <Route element={<AppLayout />}>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/agenda" element={<AgendaPage />} />
-            <Route path="/pacientes" element={<PacientesPage />} />
-            <Route path="/prontuarios" element={<ProntuariosPage />} />
-            <Route path="/anamnese" element={<AnamnesePage />} />
-            <Route path="/odontograma" element={<OdontogramaPage />} />
-            <Route path="/exames" element={<ExamesPage />} />
-            <Route path="/tratamentos" element={<TratamentosPage />} />
-            <Route path="/financeiro" element={<FinanceiroPage />} />
-            <Route path="/laboratorios" element={<LaboratoriosPage />} />
-            <Route path="/tarefas" element={<TarefasPage />} />
-            <Route path="/relatorios" element={<RelatoriosPage />} />
-            <Route path="/configuracoes" element={<ConfiguracoesPage />} />
-          </Route>
+    <AuthProvider>
+      <BrowserRouter>
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            {/* Rotas Autenticadas com AppLayout */}
+            <Route element={<AppLayout />}>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/agenda" element={<AgendaPage />} />
+              <Route path="/pacientes" element={<PacientesPage />} />
 
-          {/* Rotas de Autenticação com AuthLayout */}
-          <Route element={<AuthLayout />}>
-            <Route path="/login" element={<LoginPage />} />
-          </Route>
+              <Route
+                path="/prontuarios"
+                element={
+                  <ProtectedRoute requiredRoles={['admin_clinica', 'dentista', 'assistente']}>
+                    <ProntuariosPage />
+                  </ProtectedRoute>
+                }
+              />
 
-          {/* Fallback de rotas desconhecidas */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </Suspense>
-    </BrowserRouter>
+              <Route
+                path="/anamnese"
+                element={
+                  <ProtectedRoute requiredRoles={['admin_clinica', 'dentista', 'assistente']}>
+                    <AnamnesePage />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/odontograma"
+                element={
+                  <ProtectedRoute requiredRoles={['admin_clinica', 'dentista']}>
+                    <OdontogramaPage />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/exames"
+                element={
+                  <ProtectedRoute requiredRoles={['admin_clinica', 'dentista']}>
+                    <ExamesPage />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/tratamentos"
+                element={
+                  <ProtectedRoute requiredRoles={['admin_clinica', 'dentista']}>
+                    <TratamentosPage />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/financeiro"
+                element={
+                  <ProtectedRoute requiredRoles={['admin_clinica', 'financeiro']}>
+                    <FinanceiroPage />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/laboratorios"
+                element={
+                  <ProtectedRoute requiredRoles={['admin_clinica', 'dentista', 'assistente']}>
+                    <LaboratoriosPage />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route path="/tarefas" element={<TarefasPage />} />
+
+              <Route
+                path="/relatorios"
+                element={
+                  <ProtectedRoute requiredRoles={['admin_clinica', 'financeiro']}>
+                    <RelatoriosPage />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/configuracoes"
+                element={
+                  <ProtectedRoute requiredRoles={['admin_clinica']}>
+                    <ConfiguracoesPage />
+                  </ProtectedRoute>
+                }
+              />
+            </Route>
+
+            {/* Rotas de Autenticação com AuthLayout */}
+            <Route element={<AuthLayout />}>
+              <Route path="/login" element={<LoginPage />} />
+            </Route>
+
+            {/* Fallback de rotas desconhecidas */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Suspense>
+      </BrowserRouter>
+    </AuthProvider>
   )
 }
 

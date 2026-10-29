@@ -7,16 +7,31 @@ import {
   AlertOctagon,
   Clock,
   Sparkles,
+  LogOut,
+  Building2,
 } from 'lucide-react'
 import { Button } from '../ui/Button'
 import { Badge } from '../ui/Badge'
+import { useAuth } from '../../contexts/AuthContext'
+import { getRoleLabel } from '../../utils/formatters'
 
 export interface HeaderProps {
   onToggleSidebar: () => void
 }
 
 export const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
+  const { profile, activeClinic, activeRole, signOut } = useAuth()
   const [showNotifications, setShowNotifications] = useState(false)
+  const [showUserMenu, setShowUserMenu] = useState(false)
+
+  const initials = profile?.full_name
+    ? profile.full_name
+        .split(' ')
+        .map((n) => n[0])
+        .slice(0, 2)
+        .join('')
+        .toUpperCase()
+    : 'US'
 
   return (
     <header className="sticky top-0 z-30 h-16 bg-white/95 backdrop-blur-xs border-b border-slate-200 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
@@ -118,19 +133,54 @@ export const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
           )}
         </div>
 
-        {/* User Mini Avatar */}
-        <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
-          <div className="w-8 h-8 rounded-full bg-teal-600 text-white font-medium flex items-center justify-center text-xs shadow-2xs">
-            MS
-          </div>
-          <div className="hidden md:block text-left">
-            <span className="block text-xs font-semibold text-slate-800 leading-none">
-              Dr. Mateus
-            </span>
-            <span className="block text-[10px] text-slate-500 leading-none mt-1">
-              OdontoPrime
-            </span>
-          </div>
+        {/* User Mini Profile & Dropdown */}
+        <div className="relative">
+          <button
+            onClick={() => setShowUserMenu(!showUserMenu)}
+            type="button"
+            className="flex items-center gap-2.5 pl-2 border-l border-slate-200 text-left cursor-pointer hover:opacity-90"
+          >
+            <div className="w-8 h-8 rounded-full bg-teal-600 text-white font-medium flex items-center justify-center text-xs shadow-2xs">
+              {initials}
+            </div>
+            <div className="hidden md:block">
+              <span className="block text-xs font-semibold text-slate-800 leading-none">
+                {profile?.full_name || 'Usuário'}
+              </span>
+              <span className="block text-[10px] text-slate-500 leading-none mt-1">
+                {activeClinic?.name || 'Clínica Principal'}
+              </span>
+            </div>
+          </button>
+
+          {showUserMenu && (
+            <div className="absolute right-0 mt-2 w-56 rounded-xl bg-white shadow-xl border border-slate-200 p-2 z-50 animate-in fade-in slide-in-from-top-1">
+              <div className="px-3 py-2 border-b border-slate-100">
+                <p className="text-xs font-semibold text-slate-800 truncate">
+                  {profile?.full_name}
+                </p>
+                <p className="text-[11px] text-slate-500 truncate">{profile?.email}</p>
+                <div className="mt-1 flex items-center gap-1 text-[10px] text-teal-700 font-semibold bg-teal-50 px-2 py-0.5 rounded border border-teal-200">
+                  <Building2 className="w-3 h-3" />
+                  <span>{getRoleLabel(activeRole || '')}</span>
+                </div>
+              </div>
+
+              <div className="pt-1">
+                <button
+                  onClick={() => {
+                    setShowUserMenu(false)
+                    signOut()
+                  }}
+                  type="button"
+                  className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>Encerrar Sessão</span>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </header>
