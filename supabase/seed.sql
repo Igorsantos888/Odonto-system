@@ -227,3 +227,53 @@ VALUES
         'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380c01'::UUID
     )
 ON CONFLICT (clinic_id, patient_id) DO NOTHING;
+
+-- 8. Exames Radiográficos e Imagens Clínicas (imaging_exams)
+INSERT INTO public.imaging_exams (
+    id, clinic_id, patient_id, title, exam_type, exam_date,
+    storage_path, file_name, file_size_bytes, mime_type, notes, created_by
+)
+VALUES
+    (
+        'a1eebc99-9c0b-4ef8-bb6d-6bb9bd380a01'::UUID,
+        'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+        'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380d01'::UUID,
+        'Radiografia Panorâmica Inicial',
+        'panoramic',
+        '2025-03-12',
+        'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11/d0eebc99-9c0b-4ef8-bb6d-6bb9bd380d01/panoramica_inicial.png',
+        'panoramica_mariana_ribeiro.png',
+        2516582, -- ~2.4 MB
+        'image/png',
+        'Presença de lesão periapical circunscrita no dente 16 e dentes 18/28 inclusos.',
+        'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380c01'::UUID
+    ),
+    (
+        'a1eebc99-9c0b-4ef8-bb6d-6bb9bd380a02'::UUID,
+        'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+        'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380d01'::UUID,
+        'Periapical Dente 16 (Pós-Instrumentação)',
+        'periapical',
+        '2026-10-29',
+        'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11/d0eebc99-9c0b-4ef8-bb6d-6bb9bd380d01/periapical_16.jpg',
+        'periapical_16_instrumentacao.jpg',
+        860160, -- ~840 KB
+        'image/jpeg',
+        'Comprimento de trabalho mantido a 1mm do ápice radiográfico em todos os condutos.',
+        'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380c01'::UUID
+    ),
+    (
+        'a1eebc99-9c0b-4ef8-bb6d-6bb9bd380a03'::UUID,
+        'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+        'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380d03'::UUID,
+        'Laudo Tomografia Cone Beam - Mandíbula Posterior',
+        'report_pdf',
+        '2026-10-20',
+        'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11/d0eebc99-9c0b-4ef8-bb6d-6bb9bd380d03/tomografia_laudo.pdf',
+        'laudo_tomografia_cone_beam_mandibula.pdf',
+        5347737, -- ~5.1 MB
+        'application/pdf',
+        'Avaliação da proximidade das raízes dos terceiros molares com o canal mandibular.',
+        'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380c01'::UUID
+    )
+ON CONFLICT (id) DO NOTHING;
