@@ -277,3 +277,18 @@ VALUES
         'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380c01'::UUID
     )
 ON CONFLICT (id) DO NOTHING;
+
+-- 9. Catálogo Padrão de Procedimentos Odontológicos (procedures)
+INSERT INTO public.procedures (id, clinic_id, code, name, category, default_price, estimated_minutes)
+VALUES
+    ('b2eebc99-9c0b-4ef8-bb6d-6bb9bd380b01'::UUID, 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID, 'REST-01', 'Restauração Resina Composta (1 Face)', 'Dentística', 220.00, 30),
+    ('b2eebc99-9c0b-4ef8-bb6d-6bb9bd380b02'::UUID, 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID, 'REST-02', 'Restauração Resina Composta (2 Faces)', 'Dentística', 320.00, 45),
+    ('b2eebc99-9c0b-4ef8-bb6d-6bb9bd380b03'::UUID, 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID, 'REST-03', 'Restauração Resina Composta (3 Faces - MOD)', 'Dentística', 450.00, 60),
+    ('b2eebc99-9c0b-4ef8-bb6d-6bb9bd380b04'::UUID, 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID, 'ENDO-01', 'Tratamento Endodôntico Unirradicular', 'Endodontia', 650.00, 60),
+    ('b2eebc99-9c0b-4ef8-bb6d-6bb9bd380b05'::UUID, 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID, 'ENDO-02', 'Tratamento Endodôntico Molar (3 ou 4 condutos)', 'Endodontia', 1200.00, 90),
+    ('b2eebc99-9c0b-4ef8-bb6d-6bb9bd380b06'::UUID, 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID, 'PROT-01', 'Coroa Total em Cerâmica Pura (E-Max / Zircônia)', 'Prótese', 1850.00, 60),
+    ('b2eebc99-9c0b-4ef8-bb6d-6bb9bd380b07'::UUID, 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID, 'CIRU-01', 'Exodontia Simples de Dente Permanente', 'Cirurgia', 280.00, 40),
+    ('b2eebc99-9c0b-4ef8-bb6d-6bb9bd380b08'::UUID, 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID, 'CIRU-02', 'Exodontia de Terceiro Molar Incluso / Semi-incluso', 'Cirurgia', 550.00, 60),
+    ('b2eebc99-9c0b-4ef8-bb6d-6bb9bd380b09'::UUID, 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID, 'PREV-01', 'Profilaxia com Ultrassom e Aplicação Tópica de Flúor', 'Prevenção', 180.00, 30),
+    ('b2eebc99-9c0b-4ef8-bb6d-6bb9bd380b10'::UUID, 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID, 'IMPL-01', 'Implante Dentário de Titânio Osteointegrável', 'Implantodontia', 2400.00, 60)
+ON CONFLICT (clinic_id, code) DO NOTHING;
