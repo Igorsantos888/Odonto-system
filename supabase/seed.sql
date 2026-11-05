@@ -292,3 +292,54 @@ VALUES
     ('b2eebc99-9c0b-4ef8-bb6d-6bb9bd380b09'::UUID, 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID, 'PREV-01', 'Profilaxia com Ultrassom e Aplicação Tópica de Flúor', 'Prevenção', 180.00, 30),
     ('b2eebc99-9c0b-4ef8-bb6d-6bb9bd380b10'::UUID, 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID, 'IMPL-01', 'Implante Dentário de Titânio Osteointegrável', 'Implantodontia', 2400.00, 60)
 ON CONFLICT (clinic_id, code) DO NOTHING;
+
+-- 10. Agendamentos de Demonstração (appointments)
+INSERT INTO public.appointments (
+    id, clinic_id, patient_id, professional_id, starts_at, ends_at, status, procedure_title, notes
+)
+VALUES
+    (
+        'c1eebc99-9c0b-4ef8-bb6d-6bb9bd380c11'::UUID,
+        'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+        'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380d02'::UUID,
+        'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380c01'::UUID,
+        '2026-10-29 08:30:00-03',
+        '2026-10-29 09:15:00-03',
+        'completed',
+        'Instalação de Coroa Cerâmica',
+        'Ajuste oclusal fino e cimentação definitiva com resina dual.'
+    ),
+    (
+        'c1eebc99-9c0b-4ef8-bb6d-6bb9bd380c12'::UUID,
+        'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+        'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380d01'::UUID,
+        'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380c01'::UUID,
+        '2026-10-29 09:30:00-03',
+        '2026-10-29 10:30:00-03',
+        'in_progress',
+        'Tratamento Endodôntico (Dente 16)',
+        'ATENÇÃO: Alergia grave a Penicilina e Dipirona.'
+    ),
+    (
+        'c1eebc99-9c0b-4ef8-bb6d-6bb9bd380c13'::UUID,
+        'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+        'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380d04'::UUID,
+        'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380c02'::UUID,
+        '2026-10-29 10:45:00-03',
+        '2026-10-29 11:30:00-03',
+        'confirmed',
+        'Restauração em Resina Composta (Faces M-O)',
+        'Paciente confirmou presença via WhatsApp.'
+    ),
+    (
+        'c1eebc99-9c0b-4ef8-bb6d-6bb9bd380c14'::UUID,
+        'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+        'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380d03'::UUID,
+        'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380c01'::UUID,
+        '2026-10-29 14:00:00-03',
+        '2026-10-29 14:45:00-03',
+        'scheduled',
+        'Exodontia Simples de 3º Molar (Dente 38)',
+        'Cardiopata em uso contínuo de anticoagulante oral. Avaliar RNI recente.'
+    )
+ON CONFLICT (id) DO NOTHING;
