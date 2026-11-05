@@ -343,3 +343,131 @@ VALUES
         'Cardiopata em uso contínuo de anticoagulante oral. Avaliar RNI recente.'
     )
 ON CONFLICT (id) DO NOTHING;
+
+-- 11. Laboratórios de Prótese Parceiros (laboratories)
+INSERT INTO public.laboratories (id, clinic_id, name, contact_person, phone, email, address, active)
+VALUES
+    (
+        'd1eebc99-9c0b-4ef8-bb6d-6bb9bd380d11'::UUID,
+        'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+        'DentalArt Laboratório',
+        'Carlos Eduardo',
+        '(11) 3321-9988',
+        'contato@dentalartlab.com.br',
+        'Rua Teodoro Sampaio, 1420 - Pinheiros, São Paulo - SP',
+        true
+    ),
+    (
+        'd1eebc99-9c0b-4ef8-bb6d-6bb9bd380d12'::UUID,
+        'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+        'Precision Dental Tech',
+        'Vanessa Lima',
+        '(11) 98123-4567',
+        'pedidos@precisionlab.com.br',
+        'Rua Domingos de Morais, 1200 - Vila Mariana, São Paulo - SP',
+        true
+    )
+ON CONFLICT (clinic_id, name) DO NOTHING;
+
+-- 12. Trabalhos de Laboratório Enviados (laboratory_jobs)
+INSERT INTO public.laboratory_jobs (
+    id, clinic_id, laboratory_id, patient_id, professional_id, prosthesis_type, tooth_numbers, color_shade,
+    sent_at, due_at, status, cost, notes, created_by
+)
+VALUES
+    (
+        'd2eebc99-9c0b-4ef8-bb6d-6bb9bd380d21'::UUID,
+        'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+        'd1eebc99-9c0b-4ef8-bb6d-6bb9bd380d11'::UUID,
+        'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380d02'::UUID,
+        'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380c01'::UUID,
+        'Coroa Zircônia Monolítica',
+        '26',
+        'A2 Vita',
+        '2026-10-22',
+        '2026-10-30',
+        'sent',
+        380.00,
+        'Previsão de entrega para amanhã. Paciente com horário agendado.',
+        'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380c01'::UUID
+    ),
+    (
+        'd2eebc99-9c0b-4ef8-bb6d-6bb9bd380d22'::UUID,
+        'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+        'd1eebc99-9c0b-4ef8-bb6d-6bb9bd380d12'::UUID,
+        'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380d04'::UUID,
+        'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380c02'::UUID,
+        'Placa de Bruxismo em Acetato Rígido',
+        'Maxila',
+        'Cristal',
+        '2026-10-24',
+        '2026-11-03',
+        'in_production',
+        180.00,
+        'Alívio oclusal em caninos.',
+        'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380c02'::UUID
+    )
+ON CONFLICT (id) DO NOTHING;
+
+-- 13. Transações Financeiras (financial_transactions)
+INSERT INTO public.financial_transactions (
+    id, clinic_id, patient_id, type, category, description, amount, due_date, paid_at, status, payment_method, created_by
+)
+VALUES
+    (
+        'd3eebc99-9c0b-4ef8-bb6d-6bb9bd380d31'::UUID,
+        'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+        'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380d02'::UUID,
+        'income',
+        'Procedimentos',
+        'Pagamento de Consulta - Carlos Eduardo Costa (Coroa)',
+        1850.00,
+        '2026-10-29',
+        '2026-10-29 09:15:00-03',
+        'paid',
+        'credit_card',
+        'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380c04'::UUID
+    ),
+    (
+        'd3eebc99-9c0b-4ef8-bb6d-6bb9bd380d32'::UUID,
+        'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+        NULL,
+        'expense',
+        'Insumos Odontológicos',
+        'Fornecedor Dental Cremer (Resinas e Anestésicos)',
+        3240.00,
+        '2026-10-28',
+        '2026-10-28 14:00:00-03',
+        'paid',
+        'bank_slip',
+        'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380c04'::UUID
+    ),
+    (
+        'd3eebc99-9c0b-4ef8-bb6d-6bb9bd380d33'::UUID,
+        'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+        'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380d01'::UUID,
+        'income',
+        'Procedimentos',
+        'Entrada Tratamento Endodôntico - Mariana Ribeiro',
+        600.00,
+        '2026-10-27',
+        '2026-10-27 10:30:00-03',
+        'paid',
+        'pix',
+        'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380c04'::UUID
+    ),
+    (
+        'd3eebc99-9c0b-4ef8-bb6d-6bb9bd380d34'::UUID,
+        'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'::UUID,
+        NULL,
+        'expense',
+        'Serviços Protéticos',
+        'Serviço Laboratório DentalArt (Coroas do Mês)',
+        2100.00,
+        '2026-11-05',
+        NULL,
+        'pending',
+        'transfer',
+        'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380c04'::UUID
+    )
+ON CONFLICT (id) DO NOTHING;

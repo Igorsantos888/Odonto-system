@@ -215,6 +215,23 @@ export interface ImagingExam {
   created_by: string
 }
 
+export interface Budget {
+  id: string
+  clinic_id: string
+  patient_id: string
+  title: string
+  total: number
+  discount: number
+  final_total: number
+  status: 'draft' | 'sent' | 'approved' | 'rejected' | 'invoiced'
+  payment_terms?: string
+  notes?: string
+  created_by: string
+  created_at: string
+  updated_at?: string
+  patient?: Patient
+}
+
 export type TransactionType = 'income' | 'expense'
 export type TransactionStatus = 'pending' | 'paid' | 'overdue' | 'canceled'
 
@@ -222,6 +239,7 @@ export interface FinancialTransaction {
   id: string
   clinic_id: string
   patient_id?: string
+  budget_id?: string
   type: TransactionType
   category: string
   description: string
@@ -229,7 +247,8 @@ export interface FinancialTransaction {
   due_date: string
   paid_at?: string
   status: TransactionStatus
-  payment_method?: 'cash' | 'credit_card' | 'debit_card' | 'pix' | 'bank_slip'
+  payment_method?: 'cash' | 'credit_card' | 'debit_card' | 'pix' | 'bank_slip' | 'transfer'
+  patient?: Patient
   created_at: string
 }
 
